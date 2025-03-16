@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# frannksz
+
+[ ! `command -v fzf` ] && echo "fzf não instalado, por favor faça a instalação" && exit 1
+[ ! `command -v reflector` ] && echo "reflector não instalado, por favor faça a instalação" && exit 1
+
+# Caminho para o arquivo de espelhos
+MIRRORLIST="/etc/pacman.d/mirrorlist"
+
+# Diretório de backups
+BACKUP_DIR="/etc/pacman.d/mirrorlist-backups"
+
+# Número de espelhos a manter após classificação
+TOP_MIRRORS=10
+
+# Verifica se o script está sendo executado como root
+if [ "$EUID" -ne 0 ]; then
+  echo "Por favor, execute como root."
+  exit 1
+fi
+
+# Faz backup do arquivo atual com timestamp
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+BACKUP_FILE="$BACKUP_DIR/mirrorlist-$TIMESTAMP"
+cp "$MIRRORLIST" "$BACKUP_FILE"
+echo "Backup criado em: $BACKUP_FILE"
+
+# Lista de países disponíveis (adapte conforme necessário)
+COUNTRIES=("Brazil" "United States" "Germany" "Japan" "France" "United Kingdom" "Australia" "Canada" "China" "Russia" "India" "Italy")
+
+# Permite ao usuário selecionar dois países com fzf
+SELECTED_COUNTRIES=$(printf "%s\n" "${COUNTRIES[@]}" | fzf --multi --prompt="Selecione dois países: " --height=10 --border --exact --tac | head -n 2)
+
+if [ -z "$SELECTED_COUNTRIES" ]; then
+  echo "Nenhum país selecionado. Operação abortada."
+  exit 1
+fi
+
+# Converte a lista selecionada em um formato compatível com o reflector
+COUNTRY_LIST=$(echo "$SELECTED_COUNTRIES" | paste -sd ',' -)
+
+# Atualiza o arquivo de espelhos usando o reflector
+echo "Buscando os $TOP_MIRRORS espelhos mais rápidos nos países: $COUNTRY_LIST..."
+reflector --country "$COUNTRY_LIST" --age 6 --protocol https --sort rate --number "$TOP_MIRRORS" --save "$MIRRORLIST"
+
+# Verifica se houve erro na execução do reflector
+if [ $? -ne 0 ]; then
+  echo "Erro ao atualizar os espelhos. Verifique a conexão com a internet e tente novamente."
+  exit 1
+fi
+
+# Informa ao usuário que a operação foi concluída
+echo "Espelhos atualizados em: $MIRRORLIST"
+echo "Operação concluída. Você pode executar 'pacman -Syy' para atualizar os pacotes."
+
