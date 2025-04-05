@@ -1,24 +1,25 @@
 #!/usr/bin/env bash
 
-# Verifica as atualizações disponíveis nos repositórios oficiais
-official_updates=$(checkupdates 2>/dev/null | wc -l)
+# Franklin Souza
+# @fraanksz
 
-# Verifica as atualizações disponíveis no chaotic-aur
-#chaotic_updates=$(chaotic-aur -Qua 2>/dev/null | wc -l)
+# Verifica se os comandos necessários estão disponíveis
+command -v checkupdates >/dev/null 2>&1 || { echo "checkupdates não encontrado!"; exit 1; }
+command -v paru >/dev/null 2>&1 || { echo "paru não encontrado!"; exit 1; }
 
-# Verifica as atualizações disponíveis no AUR usando o paru
-paru_updates=$(paru -Qua 2>/dev/null | wc -l)
+# Atualizações dos repositórios oficiais
+repo_updates=$(checkupdates 2>/dev/null | sed '/^\s*$/d' | wc -l)
 
-# Soma as atualizações totais
-total_updates=$((official_updates + paru_updates))
+# Atualizações do AUR (remove o próprio paru se aparecer)
+aur_updates=$(paru -Qua 2>/dev/null | grep -v "^paru " | sed '/^\s*$/d' | wc -l)
 
-re='^[0-9]+$'
-if ! [[ $total_updates =~ $re ]] ; then
-   echo "Falha ao verificar as atualizações!!!"; exit 0
-fi
+# Soma total
+total_updates=$((repo_updates + aur_updates))
 
-if (( $total_updates > 0 )); then
-  echo "󰏗    $total_updates update(s) available"; exit 0
+# Exibição final
+if (( total_updates > 0 )); then
+  echo "󰏗    $total_updates update(s):   $repo_updates |    AUR  $aur_updates"
 else
-  echo "󰏖    arch is updated!"; exit 0
+  echo "󰏖    arch is updated !"
 fi
+
