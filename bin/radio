@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# Declaração do array associativo de streams
+declare -A STREAM
+
+STREAM=(
+  ["Diolinux LoFi"]="https://www.youtube.com/watch?v=82lq5aTKpdA"
+  ["Rock's Classics"]="https://www.youtube.com/watch?v=Nt27aBceerI"
+)
+
+# Loop principal para o menu
+while true; do
+  # Seleção da rádio
+  clear
+  echo "Escolha uma estação de rádio ou digite 'sair' para sair:"
+  select radio in "${!STREAM[@]}" "Sair"; do
+    # Caso o usuário escolha 'sair'
+    if [[ "$radio" == "Sair" ]]; then
+      echo "Saindo..."
+      break 2  # Encerra o loop principal
+    fi
+
+    # Atribuindo título e IP (URL do stream)
+    title="${radio}"
+    ip="${STREAM[$radio]}"
+
+    # Exibindo informações no terminal
+    echo "Tocando: $title"
+    echo "URL do stream: $ip"
+
+    # Usando o mpv para tocar o stream apenas no áudio
+    mpv --no-video --title="$title" "$ip"
+
+    # Quebra do loop select após uma escolha
+    break
+  done
+done
+
