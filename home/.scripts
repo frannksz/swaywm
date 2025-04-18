@@ -62,6 +62,10 @@ mkv(){
 	done
 }
 
+ptam() {
+  df -h /dev/sdb$1
+}
+
 # Streamlink
 tw(){
 	clear && streamlink -p mpv "$@" best
@@ -80,6 +84,11 @@ done
 # YouTube Mp3 Download
 mp3down(){
 	yt-dlp --extract-audio --audio-format mp3 "$@"
+}
+
+#cdto
+cdto () {
+        cd $(fd . '/' -t d| fzf)
 }
 
 # you can put as many files do you want
@@ -136,10 +145,6 @@ pkginf() {
 
 pkginf1() {
    clear && pacman -Q $@
-}
-
-mon(){
-	clear && xrandr --output VGA-0 --mode "$@"
 }
 
 device() {

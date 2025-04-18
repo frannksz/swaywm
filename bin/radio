@@ -6,6 +6,8 @@ declare -A STREAM
 STREAM=(
   ["Diolinux LoFi"]="https://www.youtube.com/watch?v=82lq5aTKpdA"
   ["Rock's Classics"]="https://www.youtube.com/watch?v=Nt27aBceerI"
+  ["Rock's Classics 2000's"]="https://www.youtube.com/watch?v=VbTYnJshTas"
+  ["Sertanejos"]="https://www.youtube.com/watch?v=L_GaJpLEL4o"
 )
 
 # Loop principal para o menu
