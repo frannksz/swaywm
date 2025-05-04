@@ -169,6 +169,35 @@ baixar_video() {
     read -n 1 -s -r -p "▶ Pressione qualquer tecla para voltar ao menu..."
 }
 
+# Assistir vídeo local
+assistir_video() {
+    pasta=$(find "$VIDEO_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | fzf --prompt="🎞️ Pasta de vídeos: ") || return
+    [[ -z "$pasta" ]] && return
+
+    video=$(find "$VIDEO_DIR/$pasta" -type f \( -iname "*.mp4" -o -iname "*.webm" -o -iname "*.mkv" \) | fzf --prompt="🎬 Escolha o vídeo: ") || return
+    [[ -z "$video" ]] && return
+
+    echo "🎥 Assistindo: $(basename "$video")"
+    mpv "$video"
+}
+
+# Assistir online via MPV
+assistir_online() {
+    read -rp "🔍 Buscar por: " termo
+    [[ -z "$termo" ]] && return
+
+    selecionado=$(yt-dlp "ytsearch10:$termo" --print "%(title).80s | %(duration)s | %(uploader)s | %(webpage_url)s" 2>/dev/null | \
+                  fzf --prompt="📺 Escolha um vídeo para assistir online: " --height=15) || return
+    [[ -z "$selecionado" ]] && return
+
+    url=$(echo "$selecionado" | awk -F ' | ' '{print $NF}')
+    titulo=$(echo "$selecionado" | cut -d'|' -f1 | sed 's/ *$//')
+    
+    notificar "Iniciando streaming 🎥" "$titulo"
+    echo "🔴 Reproduzindo agora via MPV: $url"
+    mpv "$url"
+}
+
 # Tocar música
 tocar_musica() {
     pasta=$(find "$MUSICA_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | fzf --prompt="🎧 Pasta: ") || return
@@ -179,18 +208,6 @@ tocar_musica() {
 
     echo "🎵 Tocando: $(basename "$musica")"
     mpv --no-audio-display "$musica"
-}
-
-# Assistir vídeo
-assistir_video() {
-    pasta=$(find "$VIDEO_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | fzf --prompt="🎞️ Pasta de vídeos: ") || return
-    [[ -z "$pasta" ]] && return
-
-    video=$(find "$VIDEO_DIR/$pasta" -type f \( -iname "*.mp4" -o -iname "*.webm" -o -iname "*.mkv" \) | fzf --prompt="🎬 Escolha o vídeo: ") || return
-    [[ -z "$video" ]] && return
-
-    echo "🎥 Assistindo: $(basename "$video")"
-    mpv "$video"
 }
 
 # Remover arquivo
@@ -247,7 +264,7 @@ menu() {
         echo -e "$cor_random╚════════════════════════════════════╝\e[0m" | lolcat
         echo "🎛️ Selecione uma opção:"
 
-        opcao=$(printf "🚪 Sair\n❌ Remover música/vídeo\n📃 Listar vídeos\n📜 Listar músicas\n🎞️ Assistir vídeo\n🎬 Baixar vídeo\n📂 Baixar playlist\n📥 Baixar música\n🎧 Ouvir música" | \
+        opcao=$(printf "🚪 Sair\n❌ Remover música/vídeo\n📃 Listar vídeos\n📜 Listar músicas\n🎞️ Assistir vídeo\n🌐 Assistir online\n🎬 Baixar vídeo\n📂 Baixar playlist\n📥 Baixar música\n🎧 Ouvir música" | \
                 fzf --prompt="🎛️ Menu: " --height=12 --no-header) || continue
 
         [[ -z "$opcao" ]] && continue
@@ -257,6 +274,7 @@ menu() {
             "📥 Baixar música") baixar_musica ;;
             "📂 Baixar playlist") baixar_playlist ;;
             "🎬 Baixar vídeo") baixar_video ;;
+            "🌐 Assistir online") assistir_online ;;
             "🎞️ Assistir vídeo") assistir_video ;;
             "📜 Listar músicas") listar_musicas ;;
             "📃 Listar vídeos") listar_videos ;;
@@ -272,4 +290,3 @@ menu() {
 mkdir -p "$MUSICA_DIR" "$VIDEO_DIR"
 menu
 clear
-
