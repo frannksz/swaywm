@@ -20,30 +20,30 @@
 
 /* Colors (gruvbox) */
 @define-color black	#282828;
-@define-color red	#cc241d;
-@define-color green	#98971a;
+@define-color red	#f38ba8;
+@define-color green	#ED8796;
 @define-color yellow	#d79921;
 @define-color blue	#458588;
-@define-color purple	#b16286;
-@define-color aqua	#689d6a;
+@define-color purple	#F5A97F;
+@define-color aqua	#EED49F;
 @define-color gray	#a89984;
 @define-color brgray	#928374;
 @define-color brred	#fb4934;
-@define-color brgreen	#b8bb26;
-@define-color bryellow	#fabd2f;
+@define-color brgreen	#7DC4E4;
+@define-color bryellow	#CAD3F5;
 @define-color brblue	#83a598;
-@define-color brpurple	#d3869b;
-@define-color braqua	#8ec07c;
-@define-color white	#ebdbb2;
+@define-color brpurple	#ED8796;
+@define-color braqua	#A6DA95;
+@define-color white	#EE99A0;
 @define-color bg2	#504945;
-@define-color bg1   #1D2021;
+@define-color bg1   #242839;
 
 
 @define-color warning 	@bryellow;
 @define-color critical	@red;
 @define-color mode	@black;
-@define-color unfocused	@bg2;
-@define-color focused	@braqua;
+@define-color unfocused	@bryellow;
+@define-color focused	@green;
 @define-color inactive	@purple;
 @define-color sound	@brpurple;
 @define-color network	@purple;
@@ -75,7 +75,7 @@
 /* The whole bar */
 #waybar {
 	/*background: rgba(40, 40, 40, 0.8784313725); [> #282828e0 <]*/
-	background: #1D2021;
+	background: #242839;
 	color: @white;
 	font-family: JetBrains Mono, Siji;
 	font-size: 10pt;
@@ -141,7 +141,7 @@
 	/*font-weight: bold;*/
 	padding-left: 2pt;
 	padding-right: 2pt;
-	color: @white;
+	color: @black;
 	background: @unfocused;
 }
 
@@ -191,7 +191,7 @@
 
 #cpu {
 	background: @cpu;
-	color: @white;
+	color: @black;
 }
 
 #temperature {
@@ -211,27 +211,27 @@
 
 #custom-check_updates {
 	background: @check_updates;
-	color: @white;
+	color: @black;
 }
 
 #custom-colorpicker {
 	background: @colorpicker;
-	color: @white;
+	color: @black;
 }
 
 #custom-screenshot {
 	background: @screenshot;
-	color: @white;
+	color: @black;
 }
 
 #custom-mic_status {
 	background: @mic_status;
-	color: @white;
+	color: @black;
 }
 
 #custom-recorder {
 	background: @recorder;
-	color: @white;
+	color: @black;
 }
 
 #tray {
